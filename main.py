@@ -3,6 +3,9 @@ from tkinter import messagebox
 from platform import system
 from tkinter.filedialog import askopenfilename
 from PIL import ImageTk, Image
+from math import log10, sqrt
+import cv2
+import numpy as np
 
 FIRST_IMAGE = ""
 SECOND_IMAGE = ""
@@ -29,6 +32,23 @@ def openFirstImage():
     first = ImageTk.PhotoImage(Image.open(FIRST_IMAGE).resize((300, 300), Image.ANTIALIAS))
     window.first = first
     canvas1.create_image((0, 0), anchor="nw", image=first)
+
+
+def PSNR(original, compressed):
+    mse = np.mean((original - compressed) ** 2)
+    if mse == 0:
+        return 100
+    max_pixel = 255.0
+    psnr = 20 * log10(max_pixel / sqrt(mse))
+    return psnr
+
+
+def showPSNR():
+    original = cv2.imread(FIRST_IMAGE)
+    compressed = cv2.imread(SECOND_IMAGE, 1)
+    value = PSNR(original, compressed)
+    label1 = Label(text=value, fg="#eee", bg="#333")
+    label1.place(x=10, y=1)
 
 
 def openSecondImage():
@@ -62,7 +82,7 @@ button1 = Button(text="First Image",
                  justify="center",
                  command=openFirstImage)
 button1.place(relx=0.2, rely=0.7, anchor="w", width=110, bordermode=OUTSIDE)
-button_save_bmp_1 = Button(text="First Image",
+button_save_bmp_1 = Button(text="SAVE",
                            font="16",
                            justify="center",
                            command=lambda: saveImageToBMP(FIRST_IMAGE))
@@ -77,5 +97,10 @@ button_save_bmp_2 = Button(text="SAVE",
                            justify="center",
                            command=lambda: saveImageToBMP(SECOND_IMAGE))
 button_save_bmp_2.place(relx=0.7, rely=0.8, anchor="w", width=110, bordermode=OUTSIDE)
+buttonPSNR = Button(text="PSNR",
+                    font="16",
+                    justify="center",
+                    command=showPSNR)
+buttonPSNR.place(x=1, y=1, width=110, bordermode=OUTSIDE)
 window.config(menu=main_menu)
 window.mainloop()
