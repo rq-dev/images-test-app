@@ -37,7 +37,7 @@ def openFirstImage():
 def PSNR(original, compressed):
     mse = np.mean((original - compressed) ** 2)
     if mse == 0:
-        return 100
+        return "INF"
     max_pixel = 255.0
     psnr = 20 * log10(max_pixel / sqrt(mse))
     return psnr
@@ -48,7 +48,7 @@ def showPSNR():
     compressed = cv2.imread(SECOND_IMAGE, 1)
     value = PSNR(original, compressed)
     label1 = Label(text=value, fg="#eee", bg="#333")
-    label1.place(x=10, y=1)
+    label1.place(x=500, y=1)
 
 
 def openSecondImage():
