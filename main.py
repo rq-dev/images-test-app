@@ -79,7 +79,7 @@ def toGrayEqual(img, c):
     for i in range(img.size[0]):
         for j in range(img.size[1]):
             R, G, B = pixels[i, j]
-            y = int((int(R) + int(G) + int(B))/3)
+            y = int((int(R) + int(G) + int(B)) / 3)
             pixels[i, j] = (y, y, y)
     img.save("GRAY_IMAGE.png")
     if c == 0:
@@ -92,6 +92,29 @@ def toGrayEqual(img, c):
         canvas1 = Canvas(window, height=300, width=300)
         canvas1.place(relx=0.6, rely=0.1)
         second = ImageTk.PhotoImage(Image.open("GRAY_IMAGE.png").resize((300, 300), Image.ANTIALIAS))
+        window.second = second
+        canvas1.create_image((0, 0), anchor="nw", image=second)
+
+
+def toGrayWeight(img, c):
+    img = Image.open(img)
+    pixels = img.load()
+    for i in range(img.size[0]):
+        for j in range(img.size[1]):
+            R, G, B = pixels[i, j]
+            y = int(((77 / 256 * R) + (150 / 256 * G) + (29 / 256 * B)))
+            pixels[i, j] = (y, y, y)
+    img.save("GRAY_IMAGE2.png")
+    if c == 0:
+        canvas1 = Canvas(window, height=300, width=300)
+        canvas1.place(relx=0.1, rely=0.1)
+        first = ImageTk.PhotoImage(Image.open("GRAY_IMAGE2.png").resize((300, 300), Image.ANTIALIAS))
+        window.first = first
+        canvas1.create_image((0, 0), anchor="nw", image=first)
+    else:
+        canvas1 = Canvas(window, height=300, width=300)
+        canvas1.place(relx=0.6, rely=0.1)
+        second = ImageTk.PhotoImage(Image.open("GRAY_IMAGE2.png").resize((300, 300), Image.ANTIALIAS))
         window.second = second
         canvas1.create_image((0, 0), anchor="nw", image=second)
 
@@ -128,6 +151,11 @@ buttonGray = Button(text="To gray",
                     justify="center",
                     command=lambda: toGrayEqual(FIRST_IMAGE, 0))
 buttonGray.place(relx=0.2, rely=0.9, anchor="w", width=110, bordermode=OUTSIDE)
+buttonGrayWeight = Button(text="To gray weight",
+                          font="16",
+                          justify="center",
+                          command=lambda: toGrayWeight(SECOND_IMAGE, 1))
+buttonGrayWeight.place(relx=0.7, rely=0.9, anchor="w", width=110, bordermode=OUTSIDE)
 buttonPSNR = Button(text="PSNR",
                     font="16",
                     justify="center",
