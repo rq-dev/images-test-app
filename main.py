@@ -2,6 +2,8 @@ from tkinter import *
 from tkinter import messagebox
 from platform import system
 from tkinter.filedialog import askopenfilename
+
+import math
 from PIL import ImageTk, Image
 from math import log10, sqrt
 import cv2
@@ -46,9 +48,10 @@ def PSNR(original, compressed):
 def showPSNR():
     original = cv2.imread(FIRST_IMAGE)
     compressed = cv2.imread(SECOND_IMAGE, 1)
-    value = PSNR(original, compressed)
-    label1 = Label(text=value, fg="#eee", bg="#333")
-    label1.place(x=500, y=1)
+    value = StringVar()
+    value.set(str(PSNR(original, compressed)))
+    label1 = Label(textvariable=value, fg="#eee", bg="#333")
+    label1.place(x=500, y=1, width="500")
 
 
 def openSecondImage():
@@ -68,6 +71,29 @@ def show_about():
 def saveImageToBMP(img):
     picture = Image.open(img)
     picture = picture.save("{}.bmp".format(img))
+
+
+def toGrayEqual(img, c):
+    img = Image.open(img)
+    pixels = img.load()
+    for i in range(img.size[0]):
+        for j in range(img.size[1]):
+            R, G, B = pixels[i, j]
+            y = int((int(R) + int(G) + int(B))/3)
+            pixels[i, j] = (y, y, y)
+    img.save("GRAY_IMAGE.png")
+    if c == 0:
+        canvas1 = Canvas(window, height=300, width=300)
+        canvas1.place(relx=0.1, rely=0.1)
+        first = ImageTk.PhotoImage(Image.open("GRAY_IMAGE.png").resize((300, 300), Image.ANTIALIAS))
+        window.first = first
+        canvas1.create_image((0, 0), anchor="nw", image=first)
+    else:
+        canvas1 = Canvas(window, height=300, width=300)
+        canvas1.place(relx=0.6, rely=0.1)
+        second = ImageTk.PhotoImage(Image.open("GRAY_IMAGE.png").resize((300, 300), Image.ANTIALIAS))
+        window.second = second
+        canvas1.create_image((0, 0), anchor="nw", image=second)
 
 
 counter = 0
@@ -97,6 +123,11 @@ button_save_bmp_2 = Button(text="SAVE",
                            justify="center",
                            command=lambda: saveImageToBMP(SECOND_IMAGE))
 button_save_bmp_2.place(relx=0.7, rely=0.8, anchor="w", width=110, bordermode=OUTSIDE)
+buttonGray = Button(text="To gray",
+                    font="16",
+                    justify="center",
+                    command=lambda: toGrayEqual(FIRST_IMAGE, 0))
+buttonGray.place(relx=0.2, rely=0.9, anchor="w", width=110, bordermode=OUTSIDE)
 buttonPSNR = Button(text="PSNR",
                     font="16",
                     justify="center",
