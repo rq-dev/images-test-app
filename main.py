@@ -119,6 +119,35 @@ def toGrayWeight(img, c):
         canvas1.create_image((0, 0), anchor="nw", image=second)
 
 
+def toYCC(img):
+    img = Image.open(img)
+    pixels = img.load()
+    for i in range(img.size[0]):
+        for j in range(img.size[1]):
+            R, G, B = pixels[i, j]
+            y = int(((77 / 256 * R) + (150 / 256 * G) + (29 / 256 * B)))
+            cb = int((144 / 256) * (B - y) + 128)
+            cr = int((183 / 256) * (R - y) + 128)
+            pixels[i, j] = (y, cb, cr)
+    img.save("IMAGEYCC.png")
+
+
+def toRGB(img):
+    img = Image.open(img)
+    pixels = img.load()
+    for i in range(img.size[0]):
+        for j in range(img.size[1]):
+            R, G, B = pixels[i, j]
+            y = int(((77 / 256 * R) + (150 / 256 * G) + (29 / 256 * B)))
+            cb = int((144 / 256) * (B - y) + 128)
+            cr = int((183 / 256) * (R - y) + 128)
+            R = int(y + (256 / 183) * (cr - 128))
+            G = int(y - (5329 / 15481) * (cb - 128) - (11103 / 15481) * (cr - 128))
+            B = int(y + (256 / 144) * (cb - 128))
+            pixels[i, j] = (R, G, B)
+    img.save("IMAGERGB.png")
+
+
 counter = 0
 window = Tk()
 window.title("Image Test App")
