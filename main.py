@@ -6,8 +6,8 @@ from PIL import ImageTk, Image
 from math import log10, sqrt
 import cv2
 import numpy as np
-from numpy import asarray
 import datetime
+import os
 
 FIRST_IMAGE = Image.open("Test_Images/image_Lena512rgb.png")
 SECOND_IMAGE = Image.open("Test_Images/image_Lena512rgb.png")
@@ -55,11 +55,31 @@ def PSNR(original, compressed):
     return psnr
 
 
+def saveImageToBMP(img):
+    picture = img.save("{}.bmp".format(datetime.datetime.now()))
+
+
+def saveImageWithName(img, ext, name):
+    picture = img.save("{0}.{1}".format(name, ext))
+
+
 def showPSNR():
-    original = cv2.imread(askopenfilename())
-    compressed = cv2.imread(askopenfilename(), 1)
+    clearPSNR()
+    saveImageWithName(FIRST_IMAGE, "bmp", "temp1")
+    saveImageWithName(SECOND_IMAGE, "bmp", "temp2")
+    original = cv2.imread("temp1.bmp")
+    compressed = cv2.imread("temp2.bmp", 1)
     value = StringVar()
     value.set(str(PSNR(original, compressed)))
+    label1 = Label(textvariable=value, fg="#eee", bg="#333")
+    label1.grid(row=15, column=2, padx=5, pady=5, columnspan=1, rowspan=1, sticky="w")
+    deleteImage("temp1.bmp")
+    deleteImage("temp2.bmp")
+
+
+def clearPSNR():
+    value = StringVar()
+    value.set(str("                                       "))
     label1 = Label(textvariable=value, fg="#eee", bg="#333")
     label1.grid(row=15, column=2, padx=5, pady=5, columnspan=1, rowspan=1, sticky="w")
 
@@ -68,8 +88,8 @@ def show_about():
     messagebox.showinfo("Made By Roman Yaschenko")
 
 
-def saveImageToBMP(img):
-    picture = img.save("{}.bmp".format(datetime.datetime.now()))
+def deleteImage(name):
+    os.remove(name)
 
 
 def toGrayEqual(img, c):
@@ -271,6 +291,6 @@ buttonToRGB2 = Button(text="To RGB",
                           command=lambda: toRGB(SECOND_IMAGE, 1))
 buttonToRGB2.grid(row=16, column=5, padx=5, pady=5, columnspan=1, rowspan=1, sticky="w")
 window.config(menu=main_menu)
-window.grid_columnconfigure(6, weight=10)
-window.grid_rowconfigure(30, weight=10)
+# window.grid_columnconfigure(6, weight=2)
+# window.grid_rowconfigure(30, weight=2)
 window.mainloop()
