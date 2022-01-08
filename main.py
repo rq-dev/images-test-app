@@ -26,6 +26,19 @@ else:
     app_icon = "icons/icons8-image.ico"
 
 
+def initial():
+    canvas1 = Canvas(window, height=512, width=512)
+    canvas2 = Canvas(window, height=512, width=512)
+    canvas1.grid(row=0, column=1, padx=5, pady=5, columnspan=2, rowspan=10, sticky="e")
+    canvas2.grid(row=0, column=4, padx=5, pady=5, columnspan=2, rowspan=10, sticky="w")
+    first = ImageTk.PhotoImage(FIRST_IMAGE.resize((512, 512), Image.ANTIALIAS))
+    window.first = first
+    canvas1.create_image((0, 0), anchor="nw", image=first)
+    second = ImageTk.PhotoImage(SECOND_IMAGE.resize((512, 512), Image.ANTIALIAS))
+    window.second = second
+    canvas2.create_image((0, 0), anchor="nw", image=second)
+
+
 def openFirstImage():
     global FIRST_IMAGE
     canvas1 = Canvas(window, height=512, width=512)
@@ -228,13 +241,67 @@ def toRGB(img, c):
         canvas1.create_image((0, 0), anchor="nw", image=first)
 
 
+def doMC(img):
+    global FIRST_IMAGE
+    original = img.copy()
+    img = img.quantize(256, 0)
+    FIRST_IMAGE = img
+    canvas1 = Canvas(window, height=512, width=512)
+    canvas1.grid(row=0, column=1, padx=5, pady=5, columnspan=2, rowspan=10, sticky="e")
+    first = ImageTk.PhotoImage(FIRST_IMAGE.resize((512, 512), Image.ANTIALIAS))
+    window.first = first
+    canvas1.create_image((0, 0), anchor="nw", image=first)
+    canvas2 = Canvas(window, height=512, width=512)
+    canvas2.grid(row=0, column=4, padx=5, pady=5, columnspan=2, rowspan=10, sticky="w")
+    second = ImageTk.PhotoImage(original.resize((512, 512), Image.ANTIALIAS))
+    window.second = second
+    canvas2.create_image((0, 0), anchor="nw", image=second)
+
+
+def doLBG(img):
+    global FIRST_IMAGE
+    original = img.copy()
+    img = img.quantize(256, 1)
+    FIRST_IMAGE = img
+    canvas1 = Canvas(window, height=512, width=512)
+    canvas1.grid(row=0, column=1, padx=5, pady=5, columnspan=2, rowspan=10, sticky="e")
+    first = ImageTk.PhotoImage(FIRST_IMAGE.resize((512, 512), Image.ANTIALIAS))
+    window.first = first
+    canvas1.create_image((0, 0), anchor="nw", image=first)
+    canvas2 = Canvas(window, height=512, width=512)
+    canvas2.grid(row=0, column=4, padx=5, pady=5, columnspan=2, rowspan=10, sticky="w")
+    second = ImageTk.PhotoImage(original.resize((512, 512), Image.ANTIALIAS))
+    window.second = second
+    canvas2.create_image((0, 0), anchor="nw", image=second)
+
+
+def doUQ(img):
+    global FIRST_IMAGE
+    original = img.copy()
+    img = img.quantize(256, 2)
+    FIRST_IMAGE = img
+    canvas1 = Canvas(window, height=512, width=512)
+    canvas1.grid(row=0, column=1, padx=5, pady=5, columnspan=2, rowspan=10, sticky="e")
+    first = ImageTk.PhotoImage(FIRST_IMAGE.resize((512, 512), Image.ANTIALIAS))
+    window.first = first
+    canvas1.create_image((0, 0), anchor="nw", image=first)
+    canvas2 = Canvas(window, height=512, width=512)
+    canvas2.grid(row=0, column=4, padx=5, pady=5, columnspan=2, rowspan=10, sticky="w")
+    second = ImageTk.PhotoImage(original.resize((512, 512), Image.ANTIALIAS))
+    window.second = second
+    canvas2.create_image((0, 0), anchor="nw", image=second)
+
+
 counter = 0
 window = Tk()
 window.title("Image Test App")
-window.geometry("1200x800")
+window.geometry("1054x800")
+window.maxsize(width=1054, height=800)
+window.minsize(width=900, height=700)
 window.iconbitmap(app_icon)
 main_menu = Menu()
 main_menu.add_cascade(label="About", command=show_about)
+initial()
 button1 = Button(text="First Image",
                  font="16",
                  justify="center",
@@ -290,6 +357,21 @@ buttonToRGB2 = Button(text="To RGB",
                           justify="center",
                           command=lambda: toRGB(SECOND_IMAGE, 1))
 buttonToRGB2.grid(row=16, column=5, padx=5, pady=5, columnspan=1, rowspan=1, sticky="w")
+buttonMC = Button(text="Median cut",
+                          font="16",
+                          justify="center",
+                          command=lambda: doMC(FIRST_IMAGE))
+buttonMC.grid(row=17, column=1, padx=5, pady=5, columnspan=1, rowspan=1, sticky="w")
+buttonLBG = Button(text="LBG",
+                          font="16",
+                          justify="center",
+                          command=lambda: doLBG(FIRST_IMAGE))
+buttonLBG.grid(row=17, column=2, padx=5, pady=5, columnspan=1, rowspan=1, sticky="w")
+buttonUQ = Button(text="uniform quantization",
+                          font="16",
+                          justify="center",
+                          command=lambda: doUQ(FIRST_IMAGE))
+buttonUQ.grid(row=18, column=1, padx=5, pady=5, columnspan=1, rowspan=1, sticky="w")
 window.config(menu=main_menu)
 # window.grid_columnconfigure(6, weight=2)
 # window.grid_rowconfigure(30, weight=2)
