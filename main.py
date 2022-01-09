@@ -1,3 +1,4 @@
+import tkinter
 from tkinter import *
 from tkinter import messagebox
 from platform import system
@@ -9,8 +10,9 @@ import numpy as np
 import datetime
 import os
 
-FIRST_IMAGE = Image.open("Test_Images/image_Lena512rgb.png")
-SECOND_IMAGE = Image.open("Test_Images/image_Lena512rgb.png")
+FIRST_IMAGE = Image.open("Test_Images/image_Baboon512rgb.png")
+SECOND_IMAGE = Image.open("Test_Images/image_Baboon512rgb.png")
+COLORS = 256
 
 platformD = system()
 if platformD == 'Darwin':
@@ -24,6 +26,17 @@ elif platformD == 'Windows':
 else:
 
     app_icon = "icons/icons8-image.ico"
+
+
+def reset():
+    global FIRST_IMAGE
+    global SECOND_IMAGE
+    global COLORS
+    FIRST_IMAGE = Image.open("Test_Images/image_Baboon512rgb.png")
+    SECOND_IMAGE = Image.open("Test_Images/image_Baboon512rgb.png")
+    entry.delete(0, "end")
+    entry.insert(END, "256")
+    initial()
 
 
 def initial():
@@ -242,9 +255,10 @@ def toRGB(img, c):
 
 
 def doMC(img):
+    setCOLOR()
     global FIRST_IMAGE
     original = img.copy()
-    img = img.quantize(256, 0)
+    img = img.quantize(COLORS, 0)
     FIRST_IMAGE = img
     canvas1 = Canvas(window, height=512, width=512)
     canvas1.grid(row=0, column=1, padx=5, pady=5, columnspan=2, rowspan=10, sticky="e")
@@ -259,9 +273,10 @@ def doMC(img):
 
 
 def doLBG(img):
+    setCOLOR()
     global FIRST_IMAGE
     original = img.copy()
-    img = img.quantize(256, 1)
+    img = img.quantize(COLORS, 1)
     FIRST_IMAGE = img
     canvas1 = Canvas(window, height=512, width=512)
     canvas1.grid(row=0, column=1, padx=5, pady=5, columnspan=2, rowspan=10, sticky="e")
@@ -276,9 +291,10 @@ def doLBG(img):
 
 
 def doUQ(img):
+    setCOLOR()
     global FIRST_IMAGE
     original = img.copy()
-    img = img.quantize(256, 2)
+    img = img.quantize(COLORS, 2)
     FIRST_IMAGE = img
     canvas1 = Canvas(window, height=512, width=512)
     canvas1.grid(row=0, column=1, padx=5, pady=5, columnspan=2, rowspan=10, sticky="e")
@@ -290,6 +306,11 @@ def doUQ(img):
     second = ImageTk.PhotoImage(original.resize((512, 512), Image.ANTIALIAS))
     window.second = second
     canvas2.create_image((0, 0), anchor="nw", image=second)
+
+
+def setCOLOR():
+    global COLORS
+    COLORS = int(entry.get())
 
 
 counter = 0
@@ -367,11 +388,19 @@ buttonLBG = Button(text="LBG",
                           justify="center",
                           command=lambda: doLBG(FIRST_IMAGE))
 buttonLBG.grid(row=17, column=2, padx=5, pady=5, columnspan=1, rowspan=1, sticky="w")
-buttonUQ = Button(text="uniform quantization",
+buttonUQ = Button(text="Uniform quantization",
                           font="16",
                           justify="center",
                           command=lambda: doUQ(FIRST_IMAGE))
 buttonUQ.grid(row=18, column=1, padx=5, pady=5, columnspan=1, rowspan=1, sticky="w")
+entry = tkinter.Entry(window, bg="white", fg="black")
+entry.grid(row=17, column=4, padx=5, pady=5, columnspan=1, rowspan=1, sticky="w")
+entry.insert(END, COLORS)
+buttonReset = Button(text="Reset default",
+                          font="16",
+                          justify="center",
+                          command=lambda: reset())
+buttonReset.grid(row=18, column=4, padx=5, pady=5, columnspan=1, rowspan=1, sticky="w")
 window.config(menu=main_menu)
 # window.grid_columnconfigure(6, weight=2)
 # window.grid_rowconfigure(30, weight=2)
