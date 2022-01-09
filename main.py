@@ -142,7 +142,7 @@ def toGrayEqual(img, c):
         canvas1.create_image((0, 0), anchor="nw", image=second)
 
 
-def toGrayWeight(img, c):
+def toGray(img, c):
     global SECOND_IMAGE
     pixels = img.load()
     for i in range(img.size[0]):
@@ -343,15 +343,15 @@ button_save_bmp_2 = Button(text="SAVE",
                            justify="center",
                            command=lambda: saveImageToBMP(SECOND_IMAGE))
 button_save_bmp_2.grid(row=13, column=4, padx=5, pady=5, columnspan=1, rowspan=1, sticky="w")
-buttonGray = Button(text="To gray",
+buttonGray = Button(text="To gray ew",
                     font="16",
                     justify="center",
                     command=lambda: toGrayEqual(FIRST_IMAGE, 0))
 buttonGray.grid(row=14, column=1, padx=5, pady=5, columnspan=1, rowspan=1, sticky="w")
-buttonGrayWeight = Button(text="To gray weight",
+buttonGrayWeight = Button(text="To gray",
                           font="16",
                           justify="center",
-                          command=lambda: toGrayWeight(SECOND_IMAGE, 1))
+                          command=lambda: toGray(SECOND_IMAGE, 1))
 buttonGrayWeight.grid(row=14, column=4, padx=5, pady=5, columnspan=1, rowspan=1, sticky="w")
 buttonPSNR = Button(text="PSNR",
                     font="16",
