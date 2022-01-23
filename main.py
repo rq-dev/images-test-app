@@ -18,6 +18,10 @@ import matplotlib
 FIRST_IMAGE = Image.open("Test_Images/image_Baboon512rgb.png")
 SECOND_IMAGE = Image.open("Test_Images/image_Baboon512rgb.png")
 COLORS = 256
+RED = 3
+GREEN = 4
+BLUE = 3
+OPTIONS = ["3 / 3 / 4", "3 / 4 / 3", "4 / 3 / 3"]
 
 platformD = system()
 if platformD == 'Darwin':
@@ -370,11 +374,93 @@ def doLBG(img):
     canvas2.create_image((0, 0), anchor="nw", image=second)
 
 
-def doUQ(img):
+def doUQRGB(img):
     setCOLOR()
     global FIRST_IMAGE
     original = img.copy()
-    img = img.quantize(COLORS, 2)
+    pixels = img.load()
+    bits = v_red.get()
+    if bits == "3 / 3 / 4":
+        b_r = 224
+        b_g = 224
+        b_b = 240
+    elif bits == "3 / 4 / 3":
+        b_r = 224
+        b_g = 240
+        b_b = 224
+    elif bits == "4 / 3 / 3":
+        b_r = 240
+        b_g = 224
+        b_b = 224
+
+    for i in range(img.size[0]):
+        for j in range(img.size[1]):
+            R, G, B = pixels[i, j]
+            R = R & b_r
+            G = G & b_g
+            B = B & b_b
+            # R = R & 128
+            # G = G & 128
+            # B = B & 128
+            # print(bin(R), bin(G), bin(B))
+            pixels[i, j] = (R, G, B)
+    FIRST_IMAGE = img
+    canvas1 = Canvas(window, height=512, width=512)
+    canvas1.grid(row=0, column=1, padx=5, pady=5, columnspan=2, rowspan=10, sticky="e")
+    first = ImageTk.PhotoImage(FIRST_IMAGE.resize((512, 512), Image.ANTIALIAS))
+    window.first = first
+    canvas1.create_image((0, 0), anchor="nw", image=first)
+    canvas2 = Canvas(window, height=512, width=512)
+    canvas2.grid(row=0, column=4, padx=5, pady=5, columnspan=2, rowspan=10, sticky="w")
+    second = ImageTk.PhotoImage(original.resize((512, 512), Image.ANTIALIAS))
+    window.second = second
+    canvas2.create_image((0, 0), anchor="nw", image=second)
+
+
+def doUQY(img):
+    setCOLOR()
+    global FIRST_IMAGE
+    original = img.copy()
+    toYCC(img, 0)
+    pixels = img.load()
+    pixels_original = img.load()
+    bits = v_red.get()
+    if bits == "3 / 3 / 4":
+        b_r = 224
+        b_g = 224
+        b_b = 240
+    elif bits == "3 / 4 / 3":
+        b_r = 224
+        b_g = 240
+        b_b = 224
+    elif bits == "4 / 3 / 3":
+        b_r = 240
+        b_g = 224
+        b_b = 224
+
+    for i in range(img.size[0]):
+        for j in range(img.size[1]):
+            R, G, B = pixels[i, j]
+            R = R & b_r
+            G = G & b_g
+            B = B & b_b
+            # R = R & 128
+            # G = G & 128
+            # B = B & 128
+            # print(bin(R), bin(G), bin(B))
+            pixels[i, j] = (R, G, B)
+
+    for i in range(img.size[0]):
+        for j in range(img.size[1]):
+            R, G, B = pixels_original[i, j]
+            y = int(((77 / 256 * R) + (150 / 256 * G) + (29 / 256 * B)))
+            cb = int((144 / 256) * (B - y) + 128)
+            cr = int((183 / 256) * (R - y) + 128)
+
+            R = int(y + (256 / 183) * (cr - 128))
+            G = int(y - (5329 / 15481) * (cb - 128) - (11103 / 15481) * (cr - 128))
+            B = int(y + (256 / 144) * (cb - 128))
+            pixels[i, j] = (R, G, B)
     FIRST_IMAGE = img
     canvas1 = Canvas(window, height=512, width=512)
     canvas1.grid(row=0, column=1, padx=5, pady=5, columnspan=2, rowspan=10, sticky="e")
@@ -403,7 +489,7 @@ window.iconbitmap(app_icon)
 main_menu = Menu()
 main_menu.add_cascade(label="About", command=show_about)
 initial()
-button1 = Button(text="First Image",
+button1 = Button(text="Load First Image",
                  font="16",
                  justify="center",
                  command=openFirstImage)
@@ -413,7 +499,7 @@ button_save_bmp_1 = Button(text="SAVE",
                            justify="center",
                            command=lambda: saveImageToBMP(FIRST_IMAGE))
 button_save_bmp_1.grid(row=13, column=1, padx=5, pady=5, columnspan=1, rowspan=1, sticky="w")
-button2 = Button(text="Second Image",
+button2 = Button(text="Load Second Image",
                  font="16",
                  justify="center",
                  command=openSecondImage)
@@ -468,11 +554,16 @@ buttonLBG = Button(text="LBG",
                           justify="center",
                           command=lambda: doLBG(FIRST_IMAGE))
 buttonLBG.grid(row=17, column=2, padx=5, pady=5, columnspan=1, rowspan=1, sticky="w")
-buttonUQ = Button(text="Uniform quantization",
+buttonUQ = Button(text="Uniform quantization RGB",
                           font="16",
                           justify="center",
-                          command=lambda: doUQ(FIRST_IMAGE))
+                          command=lambda: doUQRGB(FIRST_IMAGE))
 buttonUQ.grid(row=18, column=1, padx=5, pady=5, columnspan=1, rowspan=1, sticky="w")
+buttonUQY = Button(text="Uniform quantization Y",
+                          font="16",
+                          justify="center",
+                          command=lambda: doUQY(FIRST_IMAGE))
+buttonUQY.grid(row=18, column=2, padx=5, pady=5, columnspan=1, rowspan=1, sticky="w")
 entry = tkinter.Entry(window, bg="white", fg="black")
 entry.grid(row=17, column=4, padx=5, pady=5, columnspan=1, rowspan=1, sticky="w")
 entry.insert(END, COLORS)
@@ -481,6 +572,11 @@ buttonReset = Button(text="Reset default",
                           justify="center",
                           command=lambda: reset())
 buttonReset.grid(row=18, column=4, padx=5, pady=5, columnspan=1, rowspan=1, sticky="w")
+v_red = StringVar(window)
+v_red.set(OPTIONS[0])
+s_red = OptionMenu(window, v_red, *OPTIONS)
+s_red.grid(row=17, column=5, padx=5, pady=5, columnspan=1, rowspan=1, sticky="w")
+
 window.config(menu=main_menu)
 # window.grid_columnconfigure(6, weight=2)
 # window.grid_rowconfigure(30, weight=2)
