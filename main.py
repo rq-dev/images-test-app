@@ -9,6 +9,11 @@ import cv2
 import numpy as np
 import datetime
 import os
+from skimage import io
+from sklearn.cluster import KMeans
+from sklearn.utils import shuffle
+import re
+import matplotlib
 
 FIRST_IMAGE = Image.open("Test_Images/image_Baboon512rgb.png")
 SECOND_IMAGE = Image.open("Test_Images/image_Baboon512rgb.png")
@@ -276,8 +281,26 @@ def doLBG(img):
     setCOLOR()
     global FIRST_IMAGE
     original = img.copy()
-    img = img.quantize(COLORS, 1)
-    FIRST_IMAGE = img
+    saveImageWithName(img, 'bmp', 'temptolgb')
+    image_raw = io.imread('temptolgb.bmp')
+    image = np.array(image_raw, dtype=np.float64) / 255
+    h, w, d = image.shape
+    image_array = np.reshape(image, (h * w, d))
+    image_array_sample = shuffle(image_array, random_state=0)[:1000]
+    kmeans = KMeans(n_clusters=COLORS).fit(image_array_sample)
+    labels = kmeans.predict(image_array)
+    image_out = np.zeros((h, w, d))
+    label_idx = 0
+    for i in range(h):
+        for j in range(w):
+            image_out[i][j] = kmeans.cluster_centers_[labels[label_idx]]
+            label_idx += 1
+
+    matplotlib.image.imsave('namelgbtemp.bmp', image_out)
+    image_final = Image.open('namelgbtemp.bmp')
+    deleteImage('namelgbtemp.bmp')
+    deleteImage('temptolgb.bmp')
+    FIRST_IMAGE = image_final
     canvas1 = Canvas(window, height=512, width=512)
     canvas1.grid(row=0, column=1, padx=5, pady=5, columnspan=2, rowspan=10, sticky="e")
     first = ImageTk.PhotoImage(FIRST_IMAGE.resize((512, 512), Image.ANTIALIAS))
