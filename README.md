@@ -10,7 +10,7 @@
 - Image to gray CCIR 601-1
 - Image to YCbCr
 - Image to RGB
-- Quantization (median cut, lbg)
+- Quantization (median cut, lbg, uniform)
 
 ## Developer
 

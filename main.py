@@ -220,10 +220,10 @@ def toRGB(img, c):
     global SECOND_IMAGE
     pixels = img.load()
     if c == 0:
-        original = SECOND_IMAGE
+        original = FIRST_IMAGE
         o_pix = original.load()
     else:
-        original = FIRST_IMAGE
+        original = SECOND_IMAGE
         o_pix = original.load()
 
     for i in range(img.size[0]):
@@ -421,9 +421,20 @@ def doUQY(img):
     setCOLOR()
     global FIRST_IMAGE
     original = img.copy()
-    toYCC(img, 0)
     pixels = img.load()
-    pixels_original = img.load()
+    pixels_original = original.load()
+    for i in range(img.size[0]):
+        for j in range(img.size[1]):
+            R, G, B = pixels[i, j]
+            y = int(((77 / 256 * R) + (150 / 256 * G) + (29 / 256 * B)))
+            cb = int((144 / 256) * (B - y) + 128)
+            cr = int((183 / 256) * (R - y) + 128)
+            pixels[i, j] = (y, cb, cr)
+
+    saveImageWithName(img, 'bmp', 't')
+    img2 = Image.open('t.bmp')
+    pixels = img2.load()
+    deleteImage('t.bmp')
     bits = v_red.get()
     if bits == "3 / 3 / 4":
         b_r = 224
@@ -450,9 +461,13 @@ def doUQY(img):
             # print(bin(R), bin(G), bin(B))
             pixels[i, j] = (R, G, B)
 
+    saveImageWithName(img, 'bmp', 't')
+    img3 = Image.open('t.bmp')
+    pixels = img2.load()
+    deleteImage('t.bmp')
     for i in range(img.size[0]):
         for j in range(img.size[1]):
-            R, G, B = pixels_original[i, j]
+            R, G, B = pixels[i, j]
             y = int(((77 / 256 * R) + (150 / 256 * G) + (29 / 256 * B)))
             cb = int((144 / 256) * (B - y) + 128)
             cr = int((183 / 256) * (R - y) + 128)
@@ -461,7 +476,8 @@ def doUQY(img):
             G = int(y - (5329 / 15481) * (cb - 128) - (11103 / 15481) * (cr - 128))
             B = int(y + (256 / 144) * (cb - 128))
             pixels[i, j] = (R, G, B)
-    FIRST_IMAGE = img
+    # toRGB(FIRST_IMAGE, 0)
+    FIRST_IMAGE = img3
     canvas1 = Canvas(window, height=512, width=512)
     canvas1.grid(row=0, column=1, padx=5, pady=5, columnspan=2, rowspan=10, sticky="e")
     first = ImageTk.PhotoImage(FIRST_IMAGE.resize((512, 512), Image.ANTIALIAS))
