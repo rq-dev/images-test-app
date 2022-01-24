@@ -22,6 +22,7 @@ RED = 3
 GREEN = 4
 BLUE = 3
 OPTIONS = ["3 / 3 / 4", "3 / 4 / 3", "4 / 3 / 3"]
+YCBCR_OPTIONS = ["YCBCR", "Y", "Cb", "Cr"]
 
 platformD = system()
 if platformD == 'Darwin':
@@ -179,13 +180,21 @@ def toYCC(img, c):
     global SECOND_IMAGE
     original = img.copy()
     pixels = img.load()
+    show_type = v_y.get()
     for i in range(img.size[0]):
         for j in range(img.size[1]):
             R, G, B = pixels[i, j]
             y = int(((77 / 256 * R) + (150 / 256 * G) + (29 / 256 * B)))
             cb = int((144 / 256) * (B - y) + 128)
             cr = int((183 / 256) * (R - y) + 128)
-            pixels[i, j] = (y, cb, cr)
+            if show_type == "YCBCR":
+                pixels[i, j] = (y, cb, cr)
+            if show_type == "Y":
+                pixels[i, j] = (Y, y, y)
+            if show_type == "Cb":
+                pixels[i, j] = (cb, cb, cb)
+            if show_type == "Cr":
+                pixels[i, j] = (cr, cr, cr)
     if c == 0:
         FIRST_IMAGE = img
         canvas1 = Canvas(window, height=512, width=512)
@@ -594,6 +603,10 @@ v_red = StringVar(window)
 v_red.set(OPTIONS[0])
 s_red = OptionMenu(window, v_red, *OPTIONS)
 s_red.grid(row=17, column=5, padx=5, pady=5, columnspan=1, rowspan=1, sticky="w")
+v_y = StringVar(window)
+v_y.set(YCBCR_OPTIONS[0])
+s_y = OptionMenu(window, v_y, *YCBCR_OPTIONS)
+s_y.grid(row=18, column=5, padx=5, pady=5, columnspan=1, rowspan=1, sticky="w")
 
 window.config(menu=main_menu)
 # window.grid_columnconfigure(6, weight=2)
