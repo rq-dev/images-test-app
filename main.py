@@ -220,10 +220,10 @@ def toRGB(img, c):
     global SECOND_IMAGE
     pixels = img.load()
     if c == 0:
-        original = FIRST_IMAGE
+        original = SECOND_IMAGE
         o_pix = original.load()
     else:
-        original = SECOND_IMAGE
+        original = FIRST_IMAGE
         o_pix = original.load()
 
     for i in range(img.size[0]):
