@@ -461,23 +461,25 @@ def doUQY(img):
             # print(bin(R), bin(G), bin(B))
             pixels[i, j] = (R, G, B)
 
-    saveImageWithName(img, 'bmp', 't')
-    img3 = Image.open('t.bmp')
+    saveImageWithName(img2, 'bmp', 't1')
+    img3 = Image.open('t1.bmp')
     pixels = img2.load()
-    deleteImage('t.bmp')
+    deleteImage('t1.bmp')
     for i in range(img.size[0]):
         for j in range(img.size[1]):
-            R, G, B = pixels[i, j]
-            y = int(((77 / 256 * R) + (150 / 256 * G) + (29 / 256 * B)))
-            cb = int((144 / 256) * (B - y) + 128)
-            cr = int((183 / 256) * (R - y) + 128)
+            y, cb, cr = pixels[i, j]
+
+            # R, G, B = pixels[i, j]
+            # y = (int(((77 / 256 * R) + (150 / 256 * G) + (29 / 256 * B)))) & b_r
+            # cb = (int((144 / 256) * (B - y) + 128)) & b_g
+            # cr = (int((183 / 256) * (R - y) + 128)) & b_b
 
             R = int(y + (256 / 183) * (cr - 128))
             G = int(y - (5329 / 15481) * (cb - 128) - (11103 / 15481) * (cr - 128))
             B = int(y + (256 / 144) * (cb - 128))
             pixels[i, j] = (R, G, B)
     # toRGB(FIRST_IMAGE, 0)
-    FIRST_IMAGE = img3
+    FIRST_IMAGE = img2
     canvas1 = Canvas(window, height=512, width=512)
     canvas1.grid(row=0, column=1, padx=5, pady=5, columnspan=2, rowspan=10, sticky="e")
     first = ImageTk.PhotoImage(FIRST_IMAGE.resize((512, 512), Image.ANTIALIAS))
