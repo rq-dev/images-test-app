@@ -4,7 +4,7 @@ from tkinter import messagebox
 from platform import system
 from tkinter.filedialog import askopenfilename
 from PIL import ImageTk, Image
-from math import log10, sqrt, log
+from math import log10, sqrt, log, floor, ceil
 import cv2
 import numpy as np
 import datetime
@@ -190,7 +190,7 @@ def toYCC(img, c):
             if show_type == "YCBCR":
                 pixels[i, j] = (y, cb, cr)
             if show_type == "Y":
-                pixels[i, j] = (Y, y, y)
+                pixels[i, j] = (y, y, y)
             if show_type == "Cb":
                 pixels[i, j] = (cb, cb, cb)
             if show_type == "Cr":
@@ -389,29 +389,46 @@ def doUQRGB(img):
     original = img.copy()
     pixels = img.load()
     bits = v_red.get()
+    # if bits == "3 / 3 / 4":
+    #     b_r = 224
+    #     b_g = 224
+    #     b_b = 240
+    #
+    # elif bits == "3 / 4 / 3":
+    #     b_r = 224
+    #     b_g = 240
+    #     b_b = 224
+    # elif bits == "4 / 3 / 3":
+    #     b_r = 240
+    #     b_g = 224
+    #     b_b = 224
     if bits == "3 / 3 / 4":
-        b_r = 224
-        b_g = 224
-        b_b = 240
+        b_r = 3
+        b_g = 3
+        b_b = 4
+
     elif bits == "3 / 4 / 3":
-        b_r = 224
-        b_g = 240
-        b_b = 224
+        b_r = 3
+        b_g = 4
+        b_b = 3
     elif bits == "4 / 3 / 3":
-        b_r = 240
-        b_g = 224
-        b_b = 224
+        b_r = 4
+        b_g = 3
+        b_b = 3
 
     for i in range(img.size[0]):
         for j in range(img.size[1]):
             R, G, B = pixels[i, j]
-            R = R & b_r
-            G = G & b_g
-            B = B & b_b
+            # R = R & b_r
+            # G = G & b_g
+            # B = B & b_b
             # R = R & 128
             # G = G & 128
             # B = B & 128
             # print(bin(R), bin(G), bin(B))
+            R = floor(R / (2 ** (8 - b_r))) * 2 ** (8 - b_r) + 2 ** (7 - b_r)
+            G = floor(G / (2 ** (8 - b_g))) * 2 ** (8 - b_g) + 2 ** (7 - b_r)
+            B = floor(B / (2 ** (8 - b_b))) * 2 ** (8 - b_b) + 2 ** (7 - b_r)
             pixels[i, j] = (R, G, B)
     FIRST_IMAGE = img
     canvas1 = Canvas(window, height=512, width=512)
@@ -445,29 +462,45 @@ def doUQY(img):
     pixels = img2.load()
     deleteImage('t.bmp')
     bits = v_red.get()
+    # if bits == "3 / 3 / 4":
+    #     b_r = 224
+    #     b_g = 224
+    #     b_b = 240
+    # elif bits == "3 / 4 / 3":
+    #     b_r = 224
+    #     b_g = 240
+    #     b_b = 224
+    # elif bits == "4 / 3 / 3":
+    #     b_r = 240
+    #     b_g = 224
+    #     b_b = 224
     if bits == "3 / 3 / 4":
-        b_r = 224
-        b_g = 224
-        b_b = 240
+        b_r = 3
+        b_g = 3
+        b_b = 4
+
     elif bits == "3 / 4 / 3":
-        b_r = 224
-        b_g = 240
-        b_b = 224
+        b_r = 3
+        b_g = 4
+        b_b = 3
     elif bits == "4 / 3 / 3":
-        b_r = 240
-        b_g = 224
-        b_b = 224
+        b_r = 4
+        b_g = 3
+        b_b = 3
 
     for i in range(img.size[0]):
         for j in range(img.size[1]):
             R, G, B = pixels[i, j]
-            R = R & b_r
-            G = G & b_g
-            B = B & b_b
+            # R = R & b_r
+            # G = G & b_g
+            # B = B & b_b
             # R = R & 128
             # G = G & 128
             # B = B & 128
             # print(bin(R), bin(G), bin(B))
+            R = floor(R / (2 ** (8 - b_r))) * 2 ** (8 - b_r) + 2 ** (7 - b_r)
+            G = floor(G / (2 ** (8 - b_g))) * 2 ** (8 - b_g) + 2 ** (7 - b_r)
+            B = floor(B / (2 ** (8 - b_b))) * 2 ** (8 - b_b) + 2 ** (7 - b_r)
             pixels[i, j] = (R, G, B)
 
     saveImageWithName(img2, 'bmp', 't1')
@@ -536,12 +569,12 @@ button_save_bmp_2 = Button(text="SAVE",
                            justify="center",
                            command=lambda: saveImageToBMP(SECOND_IMAGE))
 button_save_bmp_2.grid(row=13, column=4, padx=5, pady=5, columnspan=1, rowspan=1, sticky="w")
-buttonGray = Button(text="To gray ew",
+buttonGray = Button(text="Equal Weight",
                     font="16",
                     justify="center",
                     command=lambda: toGrayEqual(FIRST_IMAGE, 0))
 buttonGray.grid(row=14, column=1, padx=5, pady=5, columnspan=1, rowspan=1, sticky="w")
-buttonGrayWeight = Button(text="To gray",
+buttonGrayWeight = Button(text="CCIR 601-1",
                           font="16",
                           justify="center",
                           command=lambda: toGray(SECOND_IMAGE, 1))
