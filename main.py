@@ -274,7 +274,7 @@ def toRGB(img, c):
 
 
 def median_cut_quantize(img, img_arr):
-    # when it reaches the end, color quantize
+    # when it reaches the end, color quantize and choose optimal color
     r_average = np.mean(img_arr[:, 0])
     g_average = np.mean(img_arr[:, 1])
     b_average = np.mean(img_arr[:, 2])
@@ -291,12 +291,13 @@ def split_into_buckets(img, img_arr, depth):
         median_cut_quantize(img, img_arr)
         return
 
+    # get rib length
     r_range = np.max(img_arr[:, 0]) - np.min(img_arr[:, 0])
     g_range = np.max(img_arr[:, 1]) - np.min(img_arr[:, 1])
     b_range = np.max(img_arr[:, 2]) - np.min(img_arr[:, 2])
 
     space_with_highest_range = 0
-
+    # choose rib
     if g_range >= r_range and g_range >= b_range:
         space_with_highest_range = 1
     elif b_range >= r_range and b_range >= g_range:
@@ -309,7 +310,7 @@ def split_into_buckets(img, img_arr, depth):
     img_arr = img_arr[img_arr[:, space_with_highest_range].argsort()]
     median_index = int((len(img_arr) + 1) / 2)
 
-    # split the array into two blocks
+    # split the array into two blocks and save to next iteration
     split_into_buckets(img, img_arr[0:median_index], depth - 1)
     split_into_buckets(img, img_arr[median_index:], depth - 1)
 
@@ -428,8 +429,8 @@ def doUQRGB(img):
             # B = B & 128
             # print(bin(R), bin(G), bin(B))
             R = floor(R / (2 ** (8 - b_r))) * 2 ** (8 - b_r) + 2 ** (7 - b_r)
-            G = floor(G / (2 ** (8 - b_g))) * 2 ** (8 - b_g) + 2 ** (7 - b_r)
-            B = floor(B / (2 ** (8 - b_b))) * 2 ** (8 - b_b) + 2 ** (7 - b_r)
+            G = floor(G / (2 ** (8 - b_g))) * 2 ** (8 - b_g) + 2 ** (7 - b_g)
+            B = floor(B / (2 ** (8 - b_b))) * 2 ** (8 - b_b) + 2 ** (7 - b_b)
             pixels[i, j] = (R, G, B)
     FIRST_IMAGE = img
     canvas1 = Canvas(window, height=512, width=512)
