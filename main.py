@@ -88,6 +88,7 @@ def PSNR(original, compressed):
         return "INF"
     max_pixel = 255.0
     psnr = 20 * log10(max_pixel / sqrt(mse))
+    # psnr = cv2.PSNR(original, compressed)
     return psnr
 
 
@@ -356,7 +357,7 @@ def doLBG(img):
     image = np.array(image_raw, dtype=np.float64) / 255
     h, w, d = image.shape
     image_array = np.reshape(image, (h * w, d))
-    image_array_sample = shuffle(image_array, random_state=0)[:1000]
+    image_array_sample = shuffle(image_array, random_state=0)[:1024]
     kmeans = KMeans(n_clusters=COLORS).fit(image_array_sample)
     labels = kmeans.predict(image_array)
     image_out = np.zeros((h, w, d))
