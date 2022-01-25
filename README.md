@@ -24,5 +24,7 @@
 ## Табличка
 [![N|Solid](https://rq-dev.github.io/images-test-app/table.png)](https://rq-dev.github.io/images-test-app/table.png)
 
+
 ## Keyword
 *image processing, python, psnr, equal weight, CCIR 601-1,YCbCr, RGB, uniform quantization, Linde–Buzo–Gray algorithm, median cut*
+
