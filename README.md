@@ -22,7 +22,7 @@
 [![N|Solid](https://rq-dev.github.io/images-test-app/matr.jpg)](https://rq-dev.github.io/images-test-app/matr.jpg)
 
 ## Табличка
-[![N|Solid](https://rq-dev.github.io/images-test-app/table.png)](https://rq-dev.github.io/images-test-app/table.png)
+
 
 ## App screenshot
 [![app image](https://rq-dev.github.io/images-test-app/app.png)](https://rq-dev.github.io/images-test-app/app.png)
